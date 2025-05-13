@@ -1,0 +1,145 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&display=swap');
+
+body {
+  font-family: 'Orbitron', sans-serif;
+  width: 320px; /* 稍微加宽一点以适应新样式 */
+  padding: 15px;
+  background-color: #0a0f1a; /* 深邃太空蓝 */
+  color: #e0e0e0; /* 浅灰文字 */
+  border: 1px solid #00d9ff; /* 科技蓝边框 */
+  box-shadow: 0 0 15px rgba(0, 217, 255, 0.3); /* 外部辉光 */
+}
+
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+h2 {
+  margin-top: 0;
+  margin-bottom: 20px;
+  color: #00d9ff; /* 亮科技蓝 */
+  text-align: center;
+  text-transform: uppercase; /* 大写增加科技感 */
+  letter-spacing: 2px; /* 字符间距 */
+  text-shadow: 0 0 8px rgba(0, 217, 255, 0.7); /* 文本辉光 */
+  display: flex; /* 用于垂直居中图标和文本 */
+  align-items: center; /* 用于垂直居中图标和文本 */
+  justify-content: center; /* 用于水平居中 */
+}
+
+#previewArea {
+  width: 100%;
+  min-height: 160px; /* 略微增加高度 */
+  border: 1px dashed #007bff; /* 虚线边框，科技蓝 */
+  margin-bottom: 20px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: rgba(10, 30, 60, 0.5); /* 半透明深蓝背景 */
+  overflow: hidden;
+  border-radius: 5px; /* 轻微圆角 */
+  box-shadow: inset 0 0 10px rgba(0, 123, 255, 0.3); /*内部阴影增加深度感*/
+}
+
+#previewArea img {
+  max-width: 100%;
+  max-height: 180px; /* 调整预览图片最大高度 */
+  object-fit: contain;
+  border-radius: 3px; /* 图片轻微圆角 */
+}
+
+#previewArea p {
+  color: #a0cfff; /* 浅蓝色提示文字 */
+  text-align: center;
+  padding: 10px;
+  font-size: 13px;
+}
+
+.actions {
+  display: flex;
+  justify-content: space-around;
+  width: 100%;
+  margin-top: 10px; /* 与预览区域增加一些间距 */
+}
+
+button {
+  padding: 10px 15px; /* 稍微调整内边距以适应图标 */
+  border: 1px solid #00d9ff; /* 科技蓝边框 */
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 14px;
+  font-family: 'Orbitron', sans-serif; /* 保持字体一致 */
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  background-color: transparent; /* 透明背景 */
+  color: #00d9ff; /* 科技蓝文字 */
+  transition: all 0.3s ease;
+  box-shadow: 0 0 5px rgba(0, 217, 255, 0.3); /* 轻微辉光 */
+  display: flex; /* 用于垂直居中图标和文本 */
+  align-items: center; /* 用于垂直居中图标和文本 */
+  justify-content: center; /* 用于水平居中 */
+}
+
+.button-icon {
+  margin-right: 8px; /* 图标和文字的间距 */
+  stroke: currentColor; /* 使SVG图标颜色与按钮文字颜色一致 */
+}
+
+button:disabled {
+  border-color: #3a4f6a; /* 禁用时边框颜色变暗 */
+  color: #3a4f6a; /* 禁用时文字颜色变暗 */
+  cursor: not-allowed;
+  background-color: rgba(10, 30, 60, 0.3);
+  box-shadow: none;
+}
+
+button:hover:not(:disabled) {
+  background-color: #00d9ff; /* 悬停时背景变为科技蓝 */
+  color: #0a0f1a; /* 悬停时文字变为深色 */
+  box-shadow: 0 0 12px rgba(0, 217, 255, 0.7); /* 增强辉光 */
+}
+
+button:hover:not(:disabled) .button-icon {
+  stroke: #0a0f1a; /* 悬停时图标颜色也改变 */
+}
+
+/* 增加一些科技感的装饰线条 */
+body::before, body::after {
+  content: '';
+  position: absolute;
+  height: 2px;
+  width: 50px;
+  background: #00d9ff;
+  opacity: 0.6;
+}
+
+body::before {
+  top: 5px;
+  left: 5px;
+}
+
+body::after {
+  bottom: 5px;
+  right: 5px;
+}
+
+.container::before, .container::after {
+  content: '';
+  position: absolute;
+  width: 2px;
+  height: 30px;
+  background: #00d9ff;
+  opacity: 0.6;
+}
+
+.container::before {
+  top: 10%;
+  left: 5px;
+}
+
+.container::after {
+  bottom: 10%;
+  right: 5px;
+}

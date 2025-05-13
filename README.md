@@ -1,0 +1,91 @@
+# 节点截图插件 (Node Screenshot Extension)
+
+[English](./README_EN.md) | 简体中文
+
+一个简单易用的Chrome浏览器扩展，允许用户选择并截取网页上的特定DOM元素。
+
+## 功能特点
+
+- 🎯 精确选择：悬停高亮显示页面元素，轻松选择目标节点
+- 📸 精确截图：自动捕获选定元素的屏幕截图
+- 📋 便捷复制：一键复制截图到剪贴板
+- 💾 快速保存：直接下载截图到本地
+- 🖥️ 高DPI支持：适配高分辨率显示器
+- 🎨 科技感UI：太空探索主题的用户界面
+
+## 安装方法
+
+### 开发模式安装
+
+1. 克隆或下载此仓库到本地
+2. 打开Chrome浏览器，进入扩展管理页面：`chrome://extensions/`
+3. 开启右上角的"开发者模式"
+4. 点击"加载已解压的扩展程序"
+5. 选择本项目文件夹
+
+## 使用方法
+
+1. 点击浏览器工具栏中的插件图标打开弹窗
+2. 弹窗打开后，鼠标移动到网页上的元素上会显示高亮边框
+3. 点击想要截图的元素
+4. 在弹窗中预览截图
+5. 点击"复制"按钮将截图复制到剪贴板
+6. 点击"下载"按钮将截图保存到本地
+
+## 技术实现
+
+### 文件结构
+
+- `manifest.json`: 扩展配置文件
+- `popup.html`: 弹窗界面HTML
+- `popup.js`: 弹窗界面交互逻辑
+- `popup_styles.css`: 弹窗样式
+- `content.js`: 内容脚本，处理页面元素选择
+- `background.js`: 后台脚本，处理截图逻辑
+- `style.css`: 内容脚本注入的样式，用于高亮元素
+
+### 工作原理
+
+1. **元素选择**：
+   - 当用户点击插件图标时，`popup.js`向当前页面的`content.js`发送开始选择的消息
+   - `content.js`监听鼠标事件，高亮显示鼠标悬停的元素
+   - 用户点击元素后，`content.js`获取元素的位置信息
+
+2. **截图处理**：
+   - `content.js`将元素位置信息发送给`background.js`
+   - `background.js`使用Chrome API捕获整个可见页面的截图
+   - 截图数据和元素位置信息存储在本地存储中
+
+3. **图像处理与展示**：
+   - `popup.js`从本地存储中读取截图数据和元素位置
+   - 使用Canvas API裁剪出选定元素的部分
+   - 在弹窗中显示裁剪后的截图
+   - 提供复制和下载功能
+
+## 浏览器兼容性
+
+- Chrome 88+
+- 基于Chromium的浏览器（如Edge、Opera等）
+
+## 权限说明
+
+此扩展需要以下权限：
+
+- `activeTab`: 访问当前标签页
+- `scripting`: 注入和执行脚本
+- `storage`: 存储截图数据
+- `host_permissions`: 允许在所有网站上运行
+
+## 许可证
+
+MIT License
+
+## 贡献指南
+
+欢迎提交问题和改进建议！
+
+1. Fork 此仓库
+2. 创建您的特性分支 (`git checkout -b feature/AmazingFeature`)
+3. 提交您的更改 (`git commit -m 'Add some AmazingFeature'`)
+4. 推送到分支 (`git push origin feature/AmazingFeature`)
+5. 打开一个 Pull Request
