@@ -7,6 +7,7 @@ A simple and easy-to-use Chrome browser extension that allows users to select an
 ## Features
 
 - 🎯 Precise Selection: Hover highlighting of page elements for easy target node selection
+- 🔍 Parent Element Selection: Navigate up the DOM tree using keyboard shortcuts or toolbar buttons
 - 📸 Accurate Screenshots: Automatically capture screenshots of selected elements
 - 📋 Easy Copying: Copy screenshots to clipboard with one click
 - 💾 Quick Saving: Download screenshots directly to local storage
@@ -27,10 +28,14 @@ A simple and easy-to-use Chrome browser extension that allows users to select an
 
 1. Click the extension icon in the browser toolbar to open the popup
 2. After the popup opens, moving your mouse over elements on the webpage will display a highlight border
-3. Click on the element you want to capture
-4. Preview the screenshot in the popup
-5. Click the "Copy" button to copy the screenshot to clipboard
-6. Click the "Download" button to save the screenshot locally
+3. Click on the element you want to initially select
+4. After initial selection, you can:
+   - Click the "Parent Element" button or press the Up Arrow key (↑) to select the parent element
+   - Click the "Confirm" button or press Enter to confirm your selection
+   - Click the "Cancel" button or press ESC to cancel the selection
+5. After confirming your selection, preview the screenshot in the popup
+6. Click the "Copy" button to copy the screenshot to clipboard
+7. Click the "Download" button to save the screenshot locally
 
 ## Technical Implementation
 
@@ -49,7 +54,9 @@ A simple and easy-to-use Chrome browser extension that allows users to select an
 1. **Element Selection**:
    - When the user clicks the extension icon, `popup.js` sends a start selection message to `content.js` on the current page
    - `content.js` listens for mouse events and highlights elements as the mouse hovers over them
-   - After the user clicks an element, `content.js` gets the element's position information
+   - After the user clicks an element, a selection toolbar appears
+   - The user can select parent elements using toolbar buttons or keyboard shortcuts
+   - After confirming the selection, `content.js` gets the element's position information
 
 2. **Screenshot Processing**:
    - `content.js` sends the element position information to `background.js`
