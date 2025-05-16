@@ -1,151 +1,151 @@
 document.addEventListener('DOMContentLoaded', () => {
-  const previewArea = document.getElementById('previewArea');
+  // Get references to DOM elements from popup.html
+  const screenshotImage = document.getElementById('screenshotImage');
+  const noScreenshotMessage = document.getElementById('noScreenshotMessage');
   const copyButton = document.getElementById('copyButton');
   const downloadButton = document.getElementById('downloadButton');
-  let capturedImageDataUrl = null; // 存储原始截图数据
-  let croppedImageDataUrl = null; // 存储裁剪后的截图数据
+  const copyButtonTextSpan = copyButton.querySelector('.button-icon') ? copyButton.childNodes[copyButton.childNodes.length-1] : copyButton; // Get text node or span
+  const originalCopyButtonText = copyButtonTextSpan.textContent.trim();
 
-  // 尝试从 storage 加载截图
-  chrome.storage.local.get(['screenshotDataUrl', 'elementRect'], (result) => {
-    if (result.screenshotDataUrl && result.elementRect) {
-      capturedImageDataUrl = result.screenshotDataUrl;
-      const elementRect = result.elementRect;
+  let currentScreenshotUrl = null; // To store the data URL for button actions
 
-      const img = new Image();
-      img.onload = () => {
-        // 创建一个 canvas 来裁剪图片
-        const canvas = document.createElement('canvas');
-        const ctx = canvas.getContext('2d');
-
-        // 考虑设备像素比进行裁剪
-        const dpr = elementRect.devicePixelRatio || 1;
-        canvas.width = elementRect.width * dpr;
-        canvas.height = elementRect.height * dpr;
-
-        // 绘制原始截图到 canvas，并只选择元素对应的区域
-        // 注意：captureVisibleTab 捕获的是视口内容，坐标是相对于视口的
-        // elementRect 的 x, y 也是相对于视口的
-        ctx.drawImage(
-          img,
-          elementRect.x * dpr, // 裁剪区域的 x 坐标
-          elementRect.y * dpr, // 裁剪区域的 y 坐标
-          elementRect.width * dpr,  // 裁剪区域的宽度
-          elementRect.height * dpr, // 裁剪区域的高度
-          0, // 在 canvas 上绘制的 x 坐标
-          0, // 在 canvas 上绘制的 y 坐标
-          elementRect.width * dpr,  // 在 canvas 上绘制的宽度
-          elementRect.height * dpr  // 在 canvas 上绘制的高度
-        );
-
-        croppedImageDataUrl = canvas.toDataURL('image/png');
-        previewArea.innerHTML = ''; // 清空提示信息
-        const previewImg = document.createElement('img');
-        previewImg.src = croppedImageDataUrl;
-        previewArea.appendChild(previewImg);
-
+  // Function to update the preview area and button states
+  function updateScreenshotPreview() {
+    chrome.storage.local.get(['capturedScreenshotUrl'], (result) => {
+      if (result.capturedScreenshotUrl) {
+        currentScreenshotUrl = result.capturedScreenshotUrl;
+        screenshotImage.src = currentScreenshotUrl;
+        screenshotImage.style.display = 'block'; 
+        noScreenshotMessage.style.display = 'none';
         copyButton.disabled = false;
         downloadButton.disabled = false;
 
-        // 清理 storage 中的数据，避免下次打开时还是旧的截图
-        chrome.storage.local.remove(['screenshotDataUrl', 'elementRect']);
-      };
-      img.onerror = () => {
-        previewArea.innerHTML = '<p>无法加载截图预览。</p>';
+        // Optional: Clear the storage after loading if you want each popup opening to require a new screenshot
+        // or if you want to prevent old screenshots from showing up if the selection process is re-initiated.
+        // chrome.storage.local.remove(['capturedScreenshotUrl']);
+      } else {
+        currentScreenshotUrl = null;
+        screenshotImage.src = '';
+        screenshotImage.style.display = 'none';
+        noScreenshotMessage.style.display = 'block';
+        // Ensure message is default if no specific error from startSelection is pending
+        if (!noScreenshotMessage.dataset.customMessage) {
+            noScreenshotMessage.textContent = '请在页面中选择一个元素进行截图。';
+        }
         copyButton.disabled = true;
         downloadButton.disabled = true;
-      };
-      img.src = capturedImageDataUrl;
+      }
+      // Reset custom message flag
+      delete noScreenshotMessage.dataset.customMessage;
+    });
+  }
 
-    } else {
-      previewArea.innerHTML = '<p>请点击页面中的元素以进行截图。</p>';
-      copyButton.disabled = true;
-      downloadButton.disabled = true;
+  // Initial update when popup opens
+  updateScreenshotPreview();
+
+  // Listen for messages (e.g., from content.js when a new screenshot is ready)
+  chrome.runtime.onMessage.addListener((request, sender, sendResponse) => {
+    if (request.action === "screenshotReady") {
+      console.log("Popup received screenshotReady message.");
+      updateScreenshotPreview();
+      sendResponse({ status: "Popup received and will update." }); 
+      return true; // Keep channel open for async response if needed later
     }
+    // Allow other listeners to process the message if any
   });
 
-  // 复制按钮点击事件
+  // Copy button click event
   copyButton.addEventListener('click', async () => {
-    if (croppedImageDataUrl) {
+    if (currentScreenshotUrl) {
       try {
-        // 将 Data URL 转换为 Blob
-        const response = await fetch(croppedImageDataUrl);
+        const response = await fetch(currentScreenshotUrl);
         const blob = await response.blob();
-
-        // 使用 Clipboard API 写入图片
         await navigator.clipboard.write([
-          new ClipboardItem({
-            [blob.type]: blob
-          })
+          new ClipboardItem({ [blob.type]: blob })
         ]);
-        // alert('截图已复制到剪贴板！'); // 可以用更友好的提示替换
-        copyButton.textContent = '已复制!';
+        copyButtonTextSpan.textContent = '已复制!';
+        copyButton.disabled = true; 
         setTimeout(() => {
-          copyButton.textContent = '复制';
+          copyButtonTextSpan.textContent = originalCopyButtonText;
+          if(currentScreenshotUrl) copyButton.disabled = false; 
         }, 2000);
       } catch (err) {
         console.error('复制失败:', err);
-        alert('复制截图失败，请检查控制台获取更多信息。\n浏览器可能不支持直接复制图片，或需要用户授权。');
-        // 降级方案：提示用户手动下载或右键复制
+        alert('复制截图失败。请查看控制台。');
       }
     }
   });
 
-  // 下载按钮点击事件
+  // Download button click event
   downloadButton.addEventListener('click', () => {
-    if (croppedImageDataUrl) {
+    if (currentScreenshotUrl) {
       const a = document.createElement('a');
-      a.href = croppedImageDataUrl;
-      a.download = 'screenshot.png';
+      a.href = currentScreenshotUrl;
+      a.download = 'element-screenshot.png'; 
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
     }
   });
 
-  // 页面加载时，自动向 content script 发送开始选择的指令
+  // Page load: send startSelection to content script
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const currentTab = tabs[0];
     if (currentTab && currentTab.id) {
-      // 检查URL，避免向不支持的页面发送消息
-      if (currentTab.url && (currentTab.url.startsWith('http:') || currentTab.url.startsWith('https:') || currentTab.url.startsWith('file:') || currentTab.url.startsWith('blob:'))) {
+      if (currentTab.url && (currentTab.url.startsWith('http:') || currentTab.url.startsWith('https:') || currentTab.url.startsWith('file:'))) {
         chrome.tabs.sendMessage(currentTab.id, { action: "startSelection" }, (response) => {
           if (chrome.runtime.lastError) {
             console.warn("向 content script 发送 startSelection 消息失败:", chrome.runtime.lastError.message);
-            if (chrome.runtime.lastError.message.includes("Receiving end does not exist")) {
-              previewArea.innerHTML = '<p>无法在此页面启动元素选择。内容脚本可能尚未加载或此页面类型不受支持。请尝试刷新页面或在普通网页上使用。</p>';
-            } else {
-              previewArea.innerHTML = '<p>无法启动元素选择。请刷新页面或尝试其他页面。</p>';
+            // Only update the message if no image is currently displayed
+            if (screenshotImage.style.display === 'none') {
+              if (chrome.runtime.lastError.message.includes("Receiving end does not exist")) {
+                noScreenshotMessage.textContent = '无法在此页面启动。脚本可能未加载。请刷新或尝试普通网页。';
+              } else {
+                noScreenshotMessage.textContent = '无法启动元素选择。请刷新或尝试其他页面。';
+              }
+              noScreenshotMessage.dataset.customMessage = "true";
             }
           } else if (response && response.success) {
             console.log("已通知 content script 开始选择元素。");
-            // 可以在这里提示用户开始选择, 例如:
-            // previewArea.innerHTML = '<p>请在页面中点击一个元素进行截图。</p>';
+            if (screenshotImage.style.display === 'none' && !noScreenshotMessage.dataset.customMessage) {
+                noScreenshotMessage.textContent = '请在页面中点击一个元素进行截图。';
+            }
           } else if (response && response.error) {
             console.error("启动元素选择失败:", response.error);
-            previewArea.innerHTML = `<p>启动元素选择失败: ${response.error}</p>`;
+            if (screenshotImage.style.display === 'none') {
+                noScreenshotMessage.textContent = `启动元素选择失败: ${response.error}`;
+                noScreenshotMessage.dataset.customMessage = "true";
+            }
           }
         });
       } else {
         console.warn("当前页面类型不支持内容脚本注入:", currentTab.url);
-        previewArea.innerHTML = '<p>此页面类型不支持截图。请在常规网页上使用。</p>';
+        if (screenshotImage.style.display === 'none') {
+            noScreenshotMessage.textContent = '此页面类型不支持截图。请在常规网页上使用。';
+            noScreenshotMessage.dataset.customMessage = "true";
+        }
         copyButton.disabled = true;
         downloadButton.disabled = true;
       }
     } else {
       console.error("无法获取当前活动标签页。");
-      previewArea.innerHTML = '<p>无法与页面通信以开始选择。</p>';
+      if (screenshotImage.style.display === 'none') {
+          noScreenshotMessage.textContent = '无法与页面通信以开始选择。';
+          noScreenshotMessage.dataset.customMessage = "true";
+      }
       copyButton.disabled = true;
       downloadButton.disabled = true;
     }
   });
 
-  // 当 popup 关闭时，通知 content script 停止选择
-  window.addEventListener('unload', () => {
+  // Popup close: send stopSelection to content script
+  // Note: 'unload' is not perfectly reliable for popups. 
+  // Consider if this logic is critical or can be handled differently (e.g., by content script timeout)
+  window.addEventListener('unload', () => { 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const currentTab = tabs[0];
       if (currentTab && currentTab.id) {
-        // 同样检查URL
-        if (currentTab.url && (currentTab.url.startsWith('http:') || currentTab.url.startsWith('https:') || currentTab.url.startsWith('file:') || currentTab.url.startsWith('blob:'))) {
+        if (currentTab.url && (currentTab.url.startsWith('http:') || currentTab.url.startsWith('https:') || currentTab.url.startsWith('file:'))) {
           chrome.tabs.sendMessage(currentTab.id, { action: "stopSelection" }, (response) => {
             if (chrome.runtime.lastError) {
               // console.warn("发送 stopSelection 消息失败:", chrome.runtime.lastError.message);

@@ -186,53 +186,67 @@ function cancelSelection() {
 function captureSelectedElement() {
   if (!selectedElement) return;
 
-  // 获取元素位置
   const rect = selectedElement.getBoundingClientRect();
-  console.log("最终选定元素:", selectedElement, "位置:", rect);
+  console.log("最终选定元素:", selectedElement, "位置 (viewport-relative):", rect);
 
   // 临时移除高亮和工具栏，避免它们出现在截图中
   selectedElement.classList.remove('screenshot-element-selected');
-  removeSelectionToolbar();
+  removeSelectionToolbar(); // Ensure toolbar is hidden
+
+  // Calculate document-relative coordinates for the screenshot
+  const docX = rect.left + window.scrollX;
+  const docY = rect.top + window.scrollY;
+
+  console.log(`Sending capture request for rect (document-relative): x=${docX}, y=${docY}, width=${rect.width}, height=${rect.height}`);
 
   // 发送消息到 background.js 请求截图
   chrome.runtime.sendMessage({
     action: "captureNode",
     elementRect: {
-      x: rect.x,
-      y: rect.y,
+      x: docX,
+      y: docY,
       width: rect.width,
-      height: rect.height,
-      // 传递设备像素比，用于在高DPI屏幕上正确裁剪
-      devicePixelRatio: window.devicePixelRatio || 1
+      height: rect.height
     }
   }, (response) => {
-    if (chrome.runtime.lastError) {
-      console.error("发送截图请求失败:", chrome.runtime.lastError.message);
-      alert("截图请求失败: " + chrome.runtime.lastError.message);
-    } else if (response && response.error) {
-      console.error("截图时发生错误:", response.error);
-      alert("截图时发生错误: " + response.error);
-    } else if (response && response.success) {
-      console.log(response.message);
-      // 可以在这里给用户一些成功的反馈
-      const notification = document.createElement('div');
-      notification.className = 'screenshot-notification';
-      notification.textContent = '截图成功！请在插件弹窗中查看。';
-      document.body.appendChild(notification);
+    if (response && response.success) {
+      console.log("截图成功, 数据URL已准备好发送给Popup:", response.dataUrl);
 
-      setTimeout(() => {
-        if (notification.parentNode) {
-          notification.parentNode.removeChild(notification);
+      // Store the screenshot URL in local storage for the popup to access
+      chrome.storage.local.set({ 'capturedScreenshotUrl': response.dataUrl }, () => {
+        if (chrome.runtime.lastError) {
+          console.error("存储截图URL失败:", chrome.runtime.lastError.message);
+          alert("存储截图URL失败: " + chrome.runtime.lastError.message);
+        } else {
+          console.log("截图URL已存储. 通知Popup...");
+          // Send a message to the popup (and other parts of the extension if listening)
+          // that a new screenshot is ready.
+          chrome.runtime.sendMessage({ action: "screenshotReady" }, (msgResponse) => {
+            if (chrome.runtime.lastError) {
+              // This error can happen if the popup is not open, which is fine.
+              console.log("Popup可能未打开以接收screenshotReady消息: ", chrome.runtime.lastError.message);
+            }
+            if (msgResponse) {
+                console.log("Popup响应: ", msgResponse.status)
+            }
+          });
+          // Optionally, still inform the user on the page if direct feedback is desired
+          // For example, a less intrusive notification than an alert:
+          // showPageNotification("元素截图已捕获，请在插件弹窗中查看。"); 
         }
-      }, 3000);
+      });
+
+    } else {
+      console.error("截图失败:", response ? response.error : "未知错误");
+      alert("元素截图失败: " + (response ? response.error : "未知错误"));
     }
 
-    // 清理并停止选择
-    document.removeEventListener('keydown', handleKeyDown);
-    selectedElement = null;
-    isElementSelected = false;
+    // Whether success or failure, stop the selection mode and clean up UI
     stopSelection();
   });
+
+  // Note: stopSelection() is called in the callback to ensure it runs after the async operation.
+  // This will handle removing any remaining selection indicators, listeners, etc.
 }
 
 // 开始元素选择
