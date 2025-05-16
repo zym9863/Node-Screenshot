@@ -74,6 +74,12 @@ A simple and easy-to-use Chrome browser extension that allows users to select an
 - Chrome 88+
 - Chromium-based browsers (such as Edge, Opera, etc.)
 
+## Supported Page Types
+
+- Regular web pages (http://, https://)
+- Local files (file://)
+- Blob pages (blob://)
+
 ## Permissions
 
 This extension requires the following permissions:

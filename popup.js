@@ -15,7 +15,7 @@ document.addEventListener('DOMContentLoaded', () => {
       if (result.capturedScreenshotUrl) {
         currentScreenshotUrl = result.capturedScreenshotUrl;
         screenshotImage.src = currentScreenshotUrl;
-        screenshotImage.style.display = 'block'; 
+        screenshotImage.style.display = 'block';
         noScreenshotMessage.style.display = 'none';
         copyButton.disabled = false;
         downloadButton.disabled = false;
@@ -48,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (request.action === "screenshotReady") {
       console.log("Popup received screenshotReady message.");
       updateScreenshotPreview();
-      sendResponse({ status: "Popup received and will update." }); 
+      sendResponse({ status: "Popup received and will update." });
       return true; // Keep channel open for async response if needed later
     }
     // Allow other listeners to process the message if any
@@ -64,10 +64,10 @@ document.addEventListener('DOMContentLoaded', () => {
           new ClipboardItem({ [blob.type]: blob })
         ]);
         copyButtonTextSpan.textContent = '已复制!';
-        copyButton.disabled = true; 
+        copyButton.disabled = true;
         setTimeout(() => {
           copyButtonTextSpan.textContent = originalCopyButtonText;
-          if(currentScreenshotUrl) copyButton.disabled = false; 
+          if(currentScreenshotUrl) copyButton.disabled = false;
         }, 2000);
       } catch (err) {
         console.error('复制失败:', err);
@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', () => {
     if (currentScreenshotUrl) {
       const a = document.createElement('a');
       a.href = currentScreenshotUrl;
-      a.download = 'element-screenshot.png'; 
+      a.download = 'element-screenshot.png';
       document.body.appendChild(a);
       a.click();
       document.body.removeChild(a);
@@ -92,7 +92,7 @@ document.addEventListener('DOMContentLoaded', () => {
   chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
     const currentTab = tabs[0];
     if (currentTab && currentTab.id) {
-      if (currentTab.url && (currentTab.url.startsWith('http:') || currentTab.url.startsWith('https:') || currentTab.url.startsWith('file:'))) {
+      if (currentTab.url && (currentTab.url.startsWith('http:') || currentTab.url.startsWith('https:') || currentTab.url.startsWith('file:') || currentTab.url.startsWith('blob:'))) {
         chrome.tabs.sendMessage(currentTab.id, { action: "startSelection" }, (response) => {
           if (chrome.runtime.lastError) {
             console.warn("向 content script 发送 startSelection 消息失败:", chrome.runtime.lastError.message);
@@ -139,13 +139,13 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   // Popup close: send stopSelection to content script
-  // Note: 'unload' is not perfectly reliable for popups. 
+  // Note: 'unload' is not perfectly reliable for popups.
   // Consider if this logic is critical or can be handled differently (e.g., by content script timeout)
-  window.addEventListener('unload', () => { 
+  window.addEventListener('unload', () => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const currentTab = tabs[0];
       if (currentTab && currentTab.id) {
-        if (currentTab.url && (currentTab.url.startsWith('http:') || currentTab.url.startsWith('https:') || currentTab.url.startsWith('file:'))) {
+        if (currentTab.url && (currentTab.url.startsWith('http:') || currentTab.url.startsWith('https:') || currentTab.url.startsWith('file:') || currentTab.url.startsWith('blob:'))) {
           chrome.tabs.sendMessage(currentTab.id, { action: "stopSelection" }, (response) => {
             if (chrome.runtime.lastError) {
               // console.warn("发送 stopSelection 消息失败:", chrome.runtime.lastError.message);

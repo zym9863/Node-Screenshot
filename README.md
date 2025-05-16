@@ -74,6 +74,12 @@
 - Chrome 88+
 - 基于Chromium的浏览器（如Edge、Opera等）
 
+## 支持的页面类型
+
+- 常规网页（http://, https://）
+- 本地文件（file://）
+- Blob页面（blob://）
+
 ## 权限说明
 
 此扩展需要以下权限：
