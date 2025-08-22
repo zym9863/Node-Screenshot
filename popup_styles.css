@@ -4,10 +4,12 @@ body {
   font-family: 'Orbitron', sans-serif;
   width: 320px; /* 稍微加宽一点以适应新样式 */
   padding: 15px;
-  background-color: #0a0f1a; /* 深邃太空蓝 */
+  background: linear-gradient(135deg, #0a0f1a 0%, #0d1420 50%, #0a0f1a 100%); /* 渐变太空蓝背景 */
   color: #e0e0e0; /* 浅灰文字 */
   border: 1px solid #00d9ff; /* 科技蓝边框 */
-  box-shadow: 0 0 15px rgba(0, 217, 255, 0.3); /* 外部辉光 */
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.4), inset 0 0 20px rgba(0, 217, 255, 0.1); /* 增强外部辉光和内部光晕 */
+  position: relative;
+  overflow: hidden;
 }
 
 .container {
@@ -23,10 +25,11 @@ h2 {
   text-align: center;
   text-transform: uppercase; /* 大写增加科技感 */
   letter-spacing: 2px; /* 字符间距 */
-  text-shadow: 0 0 8px rgba(0, 217, 255, 0.7); /* 文本辉光 */
+  text-shadow: 0 0 12px rgba(0, 217, 255, 0.8), 0 0 24px rgba(0, 217, 255, 0.4); /* 增强文本辉光 */
   display: flex; /* 用于垂直居中图标和文本 */
   align-items: center; /* 用于垂直居中图标和文本 */
   justify-content: center; /* 用于水平居中 */
+  animation: titlePulse 3s ease-in-out infinite; /* 添加标题脉冲动画 */
 }
 
 #previewArea {
@@ -37,17 +40,26 @@ h2 {
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: rgba(10, 30, 60, 0.5); /* 半透明深蓝背景 */
+  background: linear-gradient(145deg, rgba(10, 30, 60, 0.6), rgba(5, 20, 45, 0.8)); /* 渐变深蓝背景 */
   overflow: hidden;
-  border-radius: 5px; /* 轻微圆角 */
-  box-shadow: inset 0 0 10px rgba(0, 123, 255, 0.3); /*内部阴影增加深度感*/
+  border-radius: 8px; /* 增加圆角 */
+  box-shadow: inset 0 0 15px rgba(0, 123, 255, 0.4), 0 0 10px rgba(0, 217, 255, 0.2); /* 增强内部阴影和外部光晕 */
+  position: relative;
+  transition: all 0.3s ease; /* 添加过渡效果 */
 }
 
 #previewArea img {
   max-width: 100%;
   max-height: 180px; /* 调整预览图片最大高度 */
   object-fit: contain;
-  border-radius: 3px; /* 图片轻微圆角 */
+  border-radius: 5px; /* 图片圆角 */
+  box-shadow: 0 0 15px rgba(0, 217, 255, 0.3); /* 为图片添加光晕效果 */
+  transition: all 0.3s ease;
+}
+
+#previewArea img:hover {
+  transform: scale(1.02); /* 悬停时轻微放大 */
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.5);
 }
 
 #previewArea p {
@@ -55,6 +67,7 @@ h2 {
   text-align: center;
   padding: 10px;
   font-size: 13px;
+  animation: textPulse 2s ease-in-out infinite; /* 添加文本脉冲动画 */
 }
 
 .actions {
@@ -65,21 +78,23 @@ h2 {
 }
 
 button {
-  padding: 10px 15px; /* 稍微调整内边距以适应图标 */
+  padding: 12px 18px; /* 增加内边距 */
   border: 1px solid #00d9ff; /* 科技蓝边框 */
-  border-radius: 5px;
+  border-radius: 8px; /* 增加圆角 */
   cursor: pointer;
   font-size: 14px;
   font-family: 'Orbitron', sans-serif; /* 保持字体一致 */
   text-transform: uppercase;
   letter-spacing: 1px;
-  background-color: transparent; /* 透明背景 */
+  background: linear-gradient(145deg, transparent, rgba(0, 217, 255, 0.1)); /* 渐变背景 */
   color: #00d9ff; /* 科技蓝文字 */
-  transition: all 0.3s ease;
-  box-shadow: 0 0 5px rgba(0, 217, 255, 0.3); /* 轻微辉光 */
+  transition: all 0.4s ease; /* 延长过渡时间 */
+  box-shadow: 0 0 8px rgba(0, 217, 255, 0.4), inset 0 0 8px rgba(0, 217, 255, 0.1); /* 增强辉光 */
   display: flex; /* 用于垂直居中图标和文本 */
   align-items: center; /* 用于垂直居中图标和文本 */
   justify-content: center; /* 用于水平居中 */
+  position: relative;
+  overflow: hidden;
 }
 
 .button-icon {
@@ -91,14 +106,22 @@ button:disabled {
   border-color: #3a4f6a; /* 禁用时边框颜色变暗 */
   color: #3a4f6a; /* 禁用时文字颜色变暗 */
   cursor: not-allowed;
-  background-color: rgba(10, 30, 60, 0.3);
+  background: linear-gradient(145deg, rgba(10, 30, 60, 0.3), rgba(5, 15, 30, 0.5)); /* 渐变禁用背景 */
   box-shadow: none;
+  opacity: 0.6; /* 降低不透明度 */
 }
 
 button:hover:not(:disabled) {
-  background-color: #00d9ff; /* 悬停时背景变为科技蓝 */
+  background: linear-gradient(145deg, #00d9ff, #0099cc); /* 渐变悬停背景 */
   color: #0a0f1a; /* 悬停时文字变为深色 */
-  box-shadow: 0 0 12px rgba(0, 217, 255, 0.7); /* 增强辉光 */
+  box-shadow: 0 0 20px rgba(0, 217, 255, 0.8), inset 0 0 15px rgba(255, 255, 255, 0.2); /* 增强辉光和内部高光 */
+  transform: translateY(-2px); /* 轻微上移效果 */
+  border-color: #00d9ff;
+}
+
+button:active:not(:disabled) {
+  transform: translateY(0); /* 点击时恢复位置 */
+  box-shadow: 0 0 15px rgba(0, 217, 255, 0.6), inset 0 0 10px rgba(0, 0, 0, 0.2);
 }
 
 button:hover:not(:disabled) .button-icon {
@@ -142,4 +165,65 @@ body::after {
 .container::after {
   bottom: 10%;
   right: 5px;
+}
+
+/* 添加粒子效果背景 */
+body::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-image: 
+    radial-gradient(2px 2px at 20px 30px, rgba(0, 217, 255, 0.3), transparent),
+    radial-gradient(2px 2px at 40px 70px, rgba(0, 217, 255, 0.2), transparent),
+    radial-gradient(1px 1px at 90px 40px, rgba(0, 217, 255, 0.4), transparent),
+    radial-gradient(1px 1px at 130px 80px, rgba(0, 217, 255, 0.2), transparent),
+    radial-gradient(2px 2px at 160px 30px, rgba(0, 217, 255, 0.3), transparent);
+  background-repeat: repeat;
+  background-size: 200px 100px;
+  animation: particleMove 20s linear infinite;
+  pointer-events: none;
+  z-index: -1;
+}
+
+/* 动画关键帧 */
+@keyframes titlePulse {
+  0%, 100% { 
+    text-shadow: 0 0 12px rgba(0, 217, 255, 0.8), 0 0 24px rgba(0, 217, 255, 0.4);
+  }
+  50% { 
+    text-shadow: 0 0 16px rgba(0, 217, 255, 1), 0 0 32px rgba(0, 217, 255, 0.6);
+  }
+}
+
+@keyframes textPulse {
+  0%, 100% { opacity: 0.8; }
+  50% { opacity: 1; }
+}
+
+@keyframes particleMove {
+  0% { transform: translate(0, 0); }
+  100% { transform: translate(-200px, -100px); }
+}
+
+/* 为预览区域添加空状态动画 */
+#previewArea:empty::before {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 40px;
+  height: 40px;
+  border: 3px solid rgba(0, 217, 255, 0.3);
+  border-top: 3px solid #00d9ff;
+  border-radius: 50%;
+  transform: translate(-50%, -50%);
+  animation: spin 2s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: translate(-50%, -50%) rotate(0deg); }
+  100% { transform: translate(-50%, -50%) rotate(360deg); }
 }

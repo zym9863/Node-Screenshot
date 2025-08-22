@@ -1,14 +1,18 @@
-/* 内容脚本注入的元素高亮样式 - 太空探索主题 */
+/* 内容脚本注入的元素高亮样式 - 增强太空探索主题 */
 /* 鼠标悬停时的元素高亮 */
 .screenshot-element-highlight {
   outline: 3px dashed #00d9ff !important; /* 科技蓝虚线, 加粗一点 */
-  box-shadow: 0 0 20px rgba(0, 217, 255, 0.8), inset 0 0 10px rgba(0, 217, 255, 0.6) !important; /* 外部和内部辉光, 增强效果 */
-  background-color: rgba(0, 100, 200, 0.15) !important; /* 轻微的蓝色背景蒙层, 略微加深 */
+  box-shadow: 
+    0 0 25px rgba(0, 217, 255, 0.9), 
+    inset 0 0 15px rgba(0, 217, 255, 0.7),
+    0 0 50px rgba(0, 217, 255, 0.4) !important; /* 多层辉光效果 */
+  background-color: rgba(0, 100, 200, 0.18) !important; /* 轻微的蓝色背景蒙层, 略微加深 */
   cursor: crosshair !important; /* 使用标准 crosshair，排除SVG光标问题 */
-  border-radius: 4px !important; /* 轻微圆角 */
-  transition: all 0.05s ease-out !important; /* 更快的过渡效果 */
+  border-radius: 6px !important; /* 增加圆角 */
+  transition: all 0.1s ease-out !important; /* 更快的过渡效果 */
   position: relative !important; /* 确保伪元素定位正确 */
   z-index: 99999999 !important; /* 尝试提高层级 */
+  animation: elementPulse 2s ease-in-out infinite !important; /* 添加脉冲动画 */
 }
 
 /* 添加扫描线效果 */
@@ -34,10 +38,15 @@
 /* 选中元素的高亮样式 */
 .screenshot-element-selected {
   outline: 3px solid #ff9500 !important; /* 橙色实线边框 */
-  box-shadow: 0 0 20px rgba(255, 149, 0, 0.8), inset 0 0 10px rgba(255, 149, 0, 0.6) !important; /* 橙色辉光 */
-  background-color: rgba(255, 149, 0, 0.15) !important; /* 轻微的橙色背景蒙层 */
+  box-shadow: 
+    0 0 30px rgba(255, 149, 0, 0.9), 
+    inset 0 0 20px rgba(255, 149, 0, 0.7),
+    0 0 60px rgba(255, 149, 0, 0.5) !important; /* 增强橙色辉光 */
+  background-color: rgba(255, 149, 0, 0.18) !important; /* 轻微的橙色背景蒙层 */
   position: relative !important;
   z-index: 99999999 !important;
+  border-radius: 6px !important; /* 增加圆角 */
+  animation: selectedPulse 1.5s ease-in-out infinite !important; /* 选中状态脉冲动画 */
 }
 
 /* 选中元素的扫描线效果 */
@@ -63,31 +72,40 @@
 /* 选择工具栏样式 */
 .screenshot-selection-toolbar {
   display: flex !important;
-  background-color: #0a0f1a !important; /* 深邃太空蓝 */
+  background: linear-gradient(145deg, #0a0f1a, #0d1420) !important; /* 渐变深邃太空蓝 */
   border: 1px solid #00d9ff !important; /* 科技蓝边框 */
-  border-radius: 5px !important;
-  padding: 5px !important;
-  box-shadow: 0 0 15px rgba(0, 217, 255, 0.5) !important; /* 外部辉光 */
+  border-radius: 8px !important; /* 增加圆角 */
+  padding: 8px !important; /* 增加内边距 */
+  box-shadow: 
+    0 0 20px rgba(0, 217, 255, 0.6), 
+    inset 0 0 10px rgba(0, 217, 255, 0.2) !important; /* 增强外部辉光和内部光晕 */
   z-index: 2147483647 !important; /* 最高层级 */
+  backdrop-filter: blur(10px) !important; /* 背景模糊效果 */
+  animation: toolbarSlideIn 0.3s ease-out !important; /* 入场动画 */
 }
 
 /* 工具栏按钮样式 */
 .screenshot-toolbar-button {
-  background-color: transparent !important;
+  background: linear-gradient(145deg, transparent, rgba(0, 217, 255, 0.1)) !important;
   color: #00d9ff !important; /* 科技蓝文字 */
   border: 1px solid #00d9ff !important;
-  border-radius: 4px !important;
-  margin: 0 5px !important;
-  padding: 5px 10px !important;
+  border-radius: 6px !important; /* 增加圆角 */
+  margin: 0 6px !important; /* 增加间距 */
+  padding: 8px 12px !important; /* 增加内边距 */
   font-size: 12px !important;
   cursor: pointer !important;
-  transition: all 0.2s ease !important;
+  transition: all 0.3s ease !important; /* 延长过渡时间 */
   font-family: 'Arial', sans-serif !important;
+  box-shadow: 0 0 8px rgba(0, 217, 255, 0.3) !important; /* 添加初始辉光 */
+  text-shadow: 0 0 4px rgba(0, 217, 255, 0.5) !important; /* 文字辉光 */
 }
 
 .screenshot-toolbar-button:hover {
-  background-color: #00d9ff !important;
+  background: linear-gradient(145deg, #00d9ff, #0099cc) !important;
   color: #0a0f1a !important; /* 深色文字 */
+  box-shadow: 0 0 15px rgba(0, 217, 255, 0.8) !important;
+  transform: translateY(-1px) !important; /* 轻微上移 */
+  text-shadow: none !important;
 }
 
 /* 成功通知样式 */
@@ -96,16 +114,20 @@
   top: 20px !important;
   left: 50% !important;
   transform: translateX(-50%) !important;
-  background-color: rgba(10, 15, 26, 0.9) !important;
+  background: linear-gradient(145deg, rgba(10, 15, 26, 0.95), rgba(5, 10, 20, 0.98)) !important;
   color: #00d9ff !important;
-  padding: 10px 20px !important;
-  border-radius: 5px !important;
+  padding: 12px 24px !important; /* 增加内边距 */
+  border-radius: 8px !important; /* 增加圆角 */
   border: 1px solid #00d9ff !important;
-  box-shadow: 0 0 15px rgba(0, 217, 255, 0.5) !important;
+  box-shadow: 
+    0 0 25px rgba(0, 217, 255, 0.7),
+    inset 0 0 10px rgba(0, 217, 255, 0.2) !important; /* 增强辉光效果 */
   z-index: 2147483647 !important;
   font-family: 'Arial', sans-serif !important;
   font-size: 14px !important;
   text-align: center !important;
+  backdrop-filter: blur(10px) !important; /* 背景模糊 */
+  animation: notificationSlideIn 0.4s ease-out !important; /* 入场动画 */
 }
 
 @keyframes scanAnimation {
@@ -114,5 +136,58 @@
   }
   100% {
     background-position: 0 -100px; /* 控制扫描速度和范围 */
+  }
+}
+
+/* 新增动画关键帧 */
+@keyframes elementPulse {
+  0%, 100% { 
+    box-shadow: 
+      0 0 25px rgba(0, 217, 255, 0.9), 
+      inset 0 0 15px rgba(0, 217, 255, 0.7),
+      0 0 50px rgba(0, 217, 255, 0.4);
+  }
+  50% { 
+    box-shadow: 
+      0 0 35px rgba(0, 217, 255, 1), 
+      inset 0 0 20px rgba(0, 217, 255, 0.8),
+      0 0 70px rgba(0, 217, 255, 0.6);
+  }
+}
+
+@keyframes selectedPulse {
+  0%, 100% { 
+    box-shadow: 
+      0 0 30px rgba(255, 149, 0, 0.9), 
+      inset 0 0 20px rgba(255, 149, 0, 0.7),
+      0 0 60px rgba(255, 149, 0, 0.5);
+  }
+  50% { 
+    box-shadow: 
+      0 0 40px rgba(255, 149, 0, 1), 
+      inset 0 0 25px rgba(255, 149, 0, 0.8),
+      0 0 80px rgba(255, 149, 0, 0.7);
+  }
+}
+
+@keyframes toolbarSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes notificationSlideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
   }
 }
